@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {type FormEvent,useState} from 'react';
 import { Link, useNavigate } from 'react-router';
 import Navbar from '~/components/navbar';
 import FileUploader from '~/components/FileUploader';
@@ -27,14 +27,14 @@ const Upload = ({resume}:{resume: Resume}) => {
 
     setStatusText("Uploading the image...")
     const uploadedImage = await fs.upload([imageFile.file]);
-    if(!uploadedImage) return setStatusText("Error: Failed to upload image");
+    if(!uploadedImage) return setStatusText("Error: Failed to upload File");
 
     setStatusText("Preparing data...")
     const uuid = generateUUID();
 
     const data = {
       id: uuid,
-      resumePath: uploadedImage.path,
+      resumePath: uploadFile.path,
       imagePath: uploadedImage.path,
       companyName,
       jobTitle,
@@ -49,9 +49,10 @@ const Upload = ({resume}:{resume: Resume}) => {
     if(!feedback) return setStatusText("Error: Failed to analyze resume")
     const feedbackText = typeof feedback.message.content === 'string' ? feedback.message.content : feedback.message.content[0].text;
     data.feedback = safeParseJson(feedbackText);
-    await kv.set( `resume: ${uuid}`, JSON.stringify(data));
+    await kv.set( `resume:${uuid}`, JSON.stringify(data));
     setStatusText('Analysis complete, redirecting...');
     console.log(data);
+    navigate(`/resume/${uuid}`);
   }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {

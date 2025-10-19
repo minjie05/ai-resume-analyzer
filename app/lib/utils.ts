@@ -24,6 +24,7 @@ export function safeParseJson(text: string) {
     // 若失败，尝试清理后解析
     try {
       const cleaned = text.replace(/```(json)?/g, '').trim();
+      
       return JSON.parse(cleaned);
     } catch (cleanError) {
       throw new Error(`无效的 JSON 格式: ${text.substring(0, 50)}...`);
